@@ -43,15 +43,17 @@ def set_seed(seed):
     return torch_manual_seed, torch_manual_seed_cuda
 
 
-def main(lambda_parametri, stepovi, lr, p_index):
-    run_config()
+def main(lambda_parametri, stepovi, lr, p_index,jupyter=False):
+    if jupyter==False:
+        run_config()
+        
     tmp = get_args('train')
     globals().update(tmp)
     base_folder_path = os.getcwd()
     base_folder_path = base_folder_path.replace("\\", "/")
 
     ime_foldera_za_upis, logs_path, save_model_path = pretraining_prints(p_index, lr, stepovi, lambda_parametri,
-                                                                         batch_size, loss_type, net_type)
+                                                                         batch_size, loss_type, net_type,jupyter)
 
     ####################
     ### data loading ###
@@ -72,8 +74,8 @@ def main(lambda_parametri, stepovi, lr, p_index):
     ############################
 
     segmentation_net = model_init(num_channels, num_channels_lab, img_h, img_w, zscore, net_type, device, server,
-                                  GPU_list)
-    if server==True:
+                                  GPU_list,jupyter)
+    if server==True and jupyter==False:
         print(summary(segmentation_net,(4,512,512)))
     ############################
     ### model initialization ###
@@ -88,7 +90,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
 
     criterion = loss_init(use_weights, loss_type, dataset, num_channels_lab, device, year)
 
-    if server:
+    if server and jupyter==False:
         start_train = torch.cuda.Event(enable_timing=True)
         start_val = torch.cuda.Event(enable_timing=True)
         start_test = torch.cuda.Event(enable_timing=True)
@@ -114,7 +116,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
         segmentation_net.train(mode=True)
         print("Epoch %d: Train[" % epoch, end="")
 
-        if server:
+        if server and jupyter==False:
             start_train.record()
             torch.cuda.empty_cache()
 
@@ -204,7 +206,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
 
         print("] ", end="")
 
-        if server:
+        if server and jupyter==False:
             end_train.record()
             torch.cuda.synchronize()
             ispis = ("Time Elapsed For Train epoch " + str(epoch) + " " + str(
@@ -225,7 +227,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
         print(" Validation[", end="")
         del train_part
 
-        if server:
+        if server and jupyter==False:
             torch.cuda.empty_cache()
 
         train_part = "Valid"
@@ -233,7 +235,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
 
         with torch.no_grad():
 
-            if server:
+            if server and jupyter==False:
                 start_val.record()
 
             index_start = 0
@@ -305,7 +307,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
                 print("Error: Unimplemented loss type!")
                 sys.exit(0)
             print("] ", end="")
-            if server:
+            if server and jupyter==False:
                 end_val.record()
                 torch.cuda.synchronize()
                 ispis = ("Time Elapsed For Valid epoch " + str(epoch) + " " + str(
@@ -322,12 +324,12 @@ def main(lambda_parametri, stepovi, lr, p_index):
         print(" Testing[", end="")
         del train_part
 
-        if server:
+        if server and jupyter==False: 
             torch.cuda.empty_cache()
         train_part = "Test_1"
         segmentation_net.eval()
 
-        if server:
+        if server and jupyter==False:
             start_test.record()
 
         with torch.no_grad():
@@ -407,7 +409,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
 
             print("] ", end="")
 
-            if server:
+            if server and jupyter==False:
                 end_test.record()
                 torch.cuda.synchronize()
                 print("] ", end="")
@@ -445,7 +447,7 @@ def main(lambda_parametri, stepovi, lr, p_index):
     if not (early_stop):
         fully_trained_model_saving(segmentation_net, save_model_path, epoch, ime_foldera_za_upis)
     #####################################
-    if server:
+    if server and jupyter==False:
         torch.cuda.empty_cache()
 
     post_training_prints(ime_foldera_za_upis)

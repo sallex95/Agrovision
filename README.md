@@ -1,4 +1,4 @@
-# AgroVisionUnet
+# AgroVisionUnetBS
 
 config.py - configuration script with constants and variables needed during training and testing 
 

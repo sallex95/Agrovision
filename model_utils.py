@@ -16,7 +16,7 @@ def set_zero_grad(model):
         param.grad = None
 
 
-def model_init(num_channels, num_channels_lab, img_h, img_w, zscore, net_type, device, server, GPU_list):
+def model_init(num_channels, num_channels_lab, img_h, img_w, zscore, net_type, device, server, GPU_list, jupyter):
     if net_type == "UNet32":
         segmentation_net = UNet32(n_channels=num_channels, n_classes=num_channels_lab, height=img_h, width=img_w,
                                   zscore=zscore)
@@ -41,7 +41,7 @@ def model_init(num_channels, num_channels_lab, img_h, img_w, zscore, net_type, d
 
     segmentation_net.to(device)
 
-    if server:
+    if server and jupyter==False:
         segmentation_net = torch.nn.DataParallel(segmentation_net, device_ids=GPU_list)
 
     return segmentation_net
@@ -86,7 +86,7 @@ def early_stopping(epoch, val_loss_es, all_validation_losses, es_check, segmenta
         early_stop = True
 
     if save_best_model:
-        torch.save(segmentation_net.module.state_dict(),
+        torch.save(segmentation_net.state_dict(),
                    (save_model_path + 'trained_model_best_epoch' + str(epoch) + ".pt"))
         if os.path.exists(save_model_path + 'trained_model_best_epoch' + str(int(epoch_model_last_save)) + ".pt"):
             os.remove(save_model_path + 'trained_model_best_epoch' + str(int(epoch_model_last_save)) + ".pt")
@@ -100,7 +100,7 @@ def early_stopping(epoch, val_loss_es, all_validation_losses, es_check, segmenta
     # early_stop = False
 
     if early_stop:
-        torch.save(segmentation_net.module.state_dict(),
+        torch.save(segmentation_net.state_dict(),
                    (save_model_path + 'trained_model_ES_epoch' + str(epoch) + ".pt"))
         if os.path.exists(save_model_path + 'trained_model_epoch' + str(int(epoch_model_last_save)) + ".pt"):
             os.remove(save_model_path + 'trained_model_epoch' + str(int(epoch_model_last_save)) + ".pt")
@@ -111,7 +111,7 @@ def early_stopping(epoch, val_loss_es, all_validation_losses, es_check, segmenta
         return early_stop
 
     if (epoch / save_checkpoint_freq).is_integer():
-        torch.save(segmentation_net.module.state_dict(), (save_model_path + 'trained_model_epoch' + str(epoch) + ".pt"))
+        torch.save(segmentation_net.state_dict(), (save_model_path + 'trained_model_epoch' + str(epoch) + ".pt"))
         if os.path.exists(save_model_path + 'trained_model_epoch' + str(int(epoch_model_last_save)) + ".pt"):
             os.remove(save_model_path + 'trained_model_epoch' + str(int(epoch_model_last_save)) + ".pt")
         epoch_model_last_save = int(epoch / save_checkpoint_freq)
@@ -122,7 +122,7 @@ def early_stopping(epoch, val_loss_es, all_validation_losses, es_check, segmenta
 
 
 def fully_trained_model_saving(segmentation_net, save_model_path, epoch, ime_foldera_za_upis):
-    torch.save(segmentation_net.module.state_dict(),
+    torch.save(segmentation_net.state_dict(),
                save_model_path + 'fully_trained_model_epochs_' + str(epoch) + ".pt")
     if os.path.exists(save_model_path + 'trained_model_epoch' + str(int(epoch)) + ".pt"):
         os.remove(save_model_path + 'trained_model_epoch' + str(int(epoch)) + ".pt")

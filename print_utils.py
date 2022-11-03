@@ -4,12 +4,17 @@ from datetime import datetime
 from data_utils import get_args, upisivanje
 
 
-def pretraining_prints(p_index, lr, stepovi, lambda_parametri, batch_size, loss_type, net_type):
+def pretraining_prints(p_index, lr, stepovi, lambda_parametri, batch_size, loss_type, net_type,jupyter):
     tmp = get_args('train')
     globals().update(tmp)
     base_folder_path = os.getcwd()
+    # base_folder_path = os.path.dirname(__file__)
+    # base_folder_path = os.path.abspath('')
     base_folder_path = base_folder_path.replace("\\", "/")
-    script_name = os.path.basename(sys.argv[0][:-3])
+    if jupyter==False:
+        script_name = os.path.basename(sys.argv[0][:-3])
+    elif jupyter==True:
+        script_name = "Jupyter"
     today1 = datetime.now()
     today = today1.strftime("%d/%m/%Y %H:%M:%S")
     today = today.replace("/", "_")
