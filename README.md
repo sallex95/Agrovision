@@ -20,6 +20,8 @@ Train_Main_New.py - main script with training and testing pipeline
 
 requirements.txt - environment libraries that are necessary
 
+Train_Main_New.ipynb - Jupyter Notebook for running training, only train parameters can be altered, notebook uses functions from rest of the project
+
 
 ## Some important config params
 
