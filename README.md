@@ -16,7 +16,7 @@ tb_utils.py - script with TensorBoard functions
 
 Unet_LtS.py - script with Unet architectures
 
-Train_BGFG_BCE_with_weights.py - main script with training and testing pipeline
+Train_Main_New.py - main script with training and testing pipeline
 
 requirements.txt - environment libraries that are necessary
 
@@ -53,16 +53,16 @@ Some of the parameters that are changeable:
   - dataset : 'full' / 'mini'
   - year : '2020' / '2021'
   
- Sale - Cross Entropy configuration:
+ Cross Entropy configuration:
   - loss_type : 'ce'
   
- Dimitrije (Nina, Marko) - Binary Cross Entropy configuration:
+ Binary Cross Entropy configuration:
   - loss_type : 'bce'
     
 Some of these hyperparameters enable new parameters that are defined in config.py and used in training and testing. Some of them are redundant, but they'll be     fixed after code review.
 As a result of running config.py script, config.json and config_test.json files are created and those are further used in training and testing.
   
-2. Run Train_BGFG_BCE_with_wieghts.py for training and testing
+2. Run Train_Main_New.py for training and testing
 
 Parameters that can be changed:
   - lr : learning rate
